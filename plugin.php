@@ -75,7 +75,6 @@ function cf_password_viewer_function($value, $field ,$form){
 	return $value;
 }
 
-
 /**
  * field type handler function to handle the submitted value to be stored
  *
@@ -91,7 +90,16 @@ function cf_password_handler_function($value, $field ,$form){
 	// return a WP_Error to return and trigger an erro. the error will shown to the user
 	//return new WP_Error( 'error', 'Nope, Sorry. Try again.');
 
-	return $value;
+	if (substr($value, 0, 6) == "{SSHA}")
+	{
+		return $value;	
+	}
+	else
+	{
+		$salt = openssl_random_pseudo_bytes(8);
+        	$hash = "{SSHA}" . base64_encode(pack("H*", sha1($value . $salt)) . $salt);
+		return $hash;
+	}
 }
 
 
